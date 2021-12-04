@@ -29,14 +29,14 @@ def flag_duplicate_entries(arr, c_num, dup_num):
                     for j in range(dup_num):
                         print("Chain of duplicates of length", dup_num, "achieved.")
                         flagged_duplicates[i-9+j] = True
-                elif counter > 10:
+                elif counter > dup_num:
                     # All other instances of counter > dup_num.
                     print("Found duplicates in amount greater than", dup_num)
                     flagged_duplicates[i] = True
                 else:
                     # Counter < dup_num.
                     print("Not enough duplicates to start flagging yet.")
-            elif counter >= 10:  # ie. value and its next are not duplicates but it was just a chain so I need to track \
+            elif counter >= dup_num:  # ie. value and its next are not duplicates but it was just a chain so I need to \
                 # the last value.
                 print("There was a chain of duplicates, but it ended. Tracking last duplicated value...")
                 flagged_duplicates[i] = True
@@ -45,9 +45,8 @@ def flag_duplicate_entries(arr, c_num, dup_num):
                 # Value not duplicated, and there was no previous chain.
                 print("No duplicate here:", i)
                 counter = 0
-        # TODO: Check special case for last value in array.
         print("Reached final value in array.")
-        if counter >= 10:
+        if counter >= dup_num:
             flagged_duplicates[len_array-1] = True
     # Passes a column vector of boolean values that indicate indices where duplicate values occur.
     return flagged_duplicates
@@ -56,7 +55,8 @@ def flag_duplicate_entries(arr, c_num, dup_num):
 # Main code for testing function below.
 # Load in desired numpy array; will test on Kos' data since I know there was some bias in the sensor and some stops \
 # where the sensor got over-saturated.
-file_path = "C:/Users/CSTAR/Desktop/ML-Force/build-ForceLD64/Forces/Kos-2021-11-25.txt"
+# file_path = "C:/Users/CSTAR/Desktop/ML-Force/build-ForceLD64/Forces/Kos-2021-11-25.txt"
+file_path = "C:/Users/carol/Downloads/Kos-2021-11-25.txt"
 # Open the file.
 g = open(file_path, "r")
 # Load the data as a numpy array.
@@ -71,7 +71,7 @@ column_names = ['Time', 'Pos_X', 'Pos_Y', 'Pos_Z', 'Vel_X', 'Vel_Y', 'Vel_Z', 'C
 # Isolate A_Force_Z to check for sensor saturation.
 col_num = [column_names.index("Pos_X"), column_names.index("Pos_Y"), column_names.index("Pos_Z")]
 # Call the function being tested.
-duplic_num = 10000
+duplic_num = 100
 all_flags = flag_duplicate_entries(temp, col_num, duplic_num)
 
 # Make colorized graph of test to check flagging values.
@@ -81,16 +81,11 @@ for i in range(len(all_flags)):
     if reduced_all_flags[i]:
         print("Holding in place at point", i)
 not_all_flags = [not k for k in reduced_all_flags]
-# not_dup_array = temp[not_all_flags, :]
-# dup_array = temp[all_flags, :]
-# Check if it worked correctly.
-# sum_array = dup_array.shape[0] + not_dup_array.shape[0]
-# print(sum_array, temp.shape[0])
 
 # Make graph of values with different colours, red for duplicate.
 t = column_names.index("Time")
 c = column_names.index("A_Force_Z")
-plt.plot(temp[not_all_flags, t], temp[not_all_flags, c], 'go', label="Not duplicated")
+plt.plot(temp[not_all_flags, t], temp[not_all_flags, c], 'go', label="Not duplicated x")
 plt.plot(temp[reduced_all_flags, t], temp[reduced_all_flags, c], 'ro', label="Duplicated")
 plt.title("Flagging Locations End Effector is not moving to check for Bias")
 plt.xlabel("Time")
