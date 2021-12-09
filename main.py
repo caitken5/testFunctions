@@ -1,10 +1,6 @@
 # This is a sample Python script.
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-
-# TODO: Create a function that identifies the minimum force value recorded from fi
-# def
 
 
 def flag_duplicate_entries(arr, c_num, dup_num):
